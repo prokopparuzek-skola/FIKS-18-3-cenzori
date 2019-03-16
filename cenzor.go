@@ -10,21 +10,27 @@ type stream_t struct {
 	x uint64
 }
 
+type usage_t struct {
+	pow   uint64
+	index uint64
+}
+
 type query_t struct {
 	B uint64
 	E uint64
 	K uint64
 }
 
-func (stream stream_t) generator() ([]uint64, []query_t) {
+func (stream stream_t) generator() ([]usage_t, []query_t) {
 	var i uint64
 	x := stream.x
-	usage := make([]uint64, stream.N)
+	usage := make([]usage_t, stream.N)
 	query := make([]query_t, stream.Q)
 
 	for i = 0; i < stream.N; i++ {
 		x = (x*stream.a + stream.b) % (10E9 + 7)
-		usage[i] = x
+		usage[i].pow = x
+		usage[i].index = i
 	}
 	for i = 0; i < stream.Q; i++ {
 		x = (x*stream.a + stream.b) % (10E9 + 7)
