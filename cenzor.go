@@ -21,6 +21,49 @@ type query_t struct {
 	K uint64
 }
 
+func merge(left, right []usage_t) []usage_t {
+	var ri, li, i uint64
+	result := make([]usage_t, len(right)+len(left))
+	for {
+		if ri == uint64(len(right)) && li == uint64(len(left)) {
+			break
+		}
+		if ri == uint64(len(right)) {
+			for i = 0; li != uint64(len(left)); li++ {
+				result[i] = left[li]
+				i++
+			}
+		} else if li == uint64(len(left)) {
+			for i = 0; ri != uint64(len(right)); ri++ {
+				result[i] = right[ri]
+				i++
+			}
+		} else {
+			if left[li].pow > right[ri].pow {
+				result[i] = right[ri]
+				ri++
+				i++
+			} else {
+				result[i] = left[li]
+				li++
+				i++
+			}
+		}
+	}
+	return result
+}
+
+func sort(usage []usage_t) []usage_t {
+	if len(usage) == 1 {
+		return usage
+	} else {
+		left := sort(usage[:len(usage)/2])
+		right := sort(usage[len(usage)/2:])
+		result := merge(left, right)
+		return result
+	}
+}
+
 func (stream stream_t) generator() ([]usage_t, []query_t) {
 	var i uint64
 	x := stream.x
@@ -68,5 +111,6 @@ func main() {
 		stream.b = b
 		stream.x = x
 		usage, query := stream.generator()
+		usage = sort(usage)
 	}
 }
