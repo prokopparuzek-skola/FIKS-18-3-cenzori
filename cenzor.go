@@ -36,6 +36,12 @@ func (stream stream_t) generator() ([]uint64, []query_t) {
 			query[i].E = query[i].B
 			query[i].B = swp
 		}
+		x = (x*stream.a + stream.b) % (10E9 + 7)
+		if x > query[i].E-query[i].B+1 {
+			query[i].K = x % (query[i].E - query[i].B - 1)
+		} else {
+			query[i].K = x
+		}
 	}
 	return usage, query
 }
@@ -55,5 +61,6 @@ func main() {
 		stream.a = a
 		stream.b = b
 		stream.x = x
+		usage, query := stream.generator()
 	}
 }
