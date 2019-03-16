@@ -72,9 +72,7 @@ func (stream stream_t) generator() ([]usage_t, []query_t) {
 
 	for i = 0; i < stream.N; i++ {
 		x = (x*stream.a + stream.b) % (10E9 + 7)
-		if x > stream.N-1 {
-			x = x % (stream.N - 1)
-		}
+		x = x % stream.N
 		usage[i].pow = x
 		usage[i].index = i
 	}
@@ -125,10 +123,10 @@ func solve(usage []usage_t, query []query_t) uint64 {
 func main() {
 	var T uint8
 	var N, Q, a, b, x uint64
-	var i uint64
+	var i uint8
 
 	fmt.Scanf("%d", &T)
-	for i = 0; i < 1; i++ {
+	for i = 0; i < T; i++ {
 		var stream stream_t
 
 		fmt.Scanf("%d%d%d%d%d", &N, &Q, &a, &b, &x)
