@@ -29,12 +29,12 @@ func merge(left, right []usage_t) []usage_t {
 			break
 		}
 		if ri == uint64(len(right)) {
-			for i = 0; li != uint64(len(left)); li++ {
+			for ; li != uint64(len(left)); li++ {
 				result[i] = left[li]
 				i++
 			}
 		} else if li == uint64(len(left)) {
-			for i = 0; ri != uint64(len(right)); ri++ {
+			for ; ri != uint64(len(right)); ri++ {
 				result[i] = right[ri]
 				i++
 			}
@@ -72,6 +72,9 @@ func (stream stream_t) generator() ([]usage_t, []query_t) {
 
 	for i = 0; i < stream.N; i++ {
 		x = (x*stream.a + stream.b) % (10E9 + 7)
+		if x > stream.N-1 {
+			x = x % (stream.N - 1)
+		}
 		usage[i].pow = x
 		usage[i].index = i
 	}
@@ -95,6 +98,30 @@ func (stream stream_t) generator() ([]usage_t, []query_t) {
 	return usage, query
 }
 
+func solve(usage []usage_t, query []query_t) uint64 {
+	var XOR, index uint64
+	last := int64(-1)
+
+	for _, ques := range query {
+		for _, pow := range usage {
+			if int64(pow.pow) == last {
+				continue
+			} else if pow.index < ques.B || pow.index > ques.E {
+				continue
+			} else {
+				if index == ques.K {
+					XOR ^= pow.pow
+					break
+				} else {
+					last = int64(pow.pow)
+					index++
+				}
+			}
+		}
+	}
+	return XOR
+}
+
 func main() {
 	var T uint8
 	var N, Q, a, b, x uint64
@@ -112,5 +139,7 @@ func main() {
 		stream.x = x
 		usage, query := stream.generator()
 		usage = sort(usage)
+		XOR := solve(usage, query)
+		println(XOR)
 	}
 }
