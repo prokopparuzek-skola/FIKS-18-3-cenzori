@@ -147,6 +147,6 @@ func main() {
 		usage, query := stream.generator()
 		usage = sort(usage)
 		XOR := solve(usage, query)
-		println(XOR)
+		fmt.Printf("%d\n", XOR)
 	}
 }
