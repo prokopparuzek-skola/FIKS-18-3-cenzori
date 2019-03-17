@@ -76,23 +76,23 @@ func (stream stream_t) generator() ([]usage_t, []query_t) {
 
 	for i = 0; i < stream.N; i++ { // generování spotřeby
 		x = stream.next(x)
-		if x > stream.N-1 {
-			x = x % stream.N
-		}
 		usage[i].pow = x
+		if usage[i].pow > stream.N-1 {
+			usage[i].pow %= stream.N
+		}
 		usage[i].index = i
 	}
 	for i = 0; i < stream.Q; i++ { // generování dotazů
 		x = stream.next(x) // B
-		if x > stream.N-1 {
-			x = x % stream.N
-		}
 		query[i].B = x
-		x = stream.next(x) // E
-		if x > stream.N-1 {
-			x = x % stream.N
+		if query[i].B > stream.N-1 {
+			query[i].B %= stream.N
 		}
+		x = stream.next(x) // E
 		query[i].E = x
+		if query[i].E > stream.N-1 {
+			query[i].E %= stream.N
+		}
 		if query[i].E < query[i].B {
 			swp := query[i].E
 			query[i].E = query[i].B
