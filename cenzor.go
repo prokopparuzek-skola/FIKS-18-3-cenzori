@@ -64,37 +64,48 @@ func sort(usage []usage_t) []usage_t {
 	}
 }
 
+func (stream stream_t) next(x uint64) uint64 {
+	return (stream.a*x + stream.b) % (1E9 + 7)
+}
+
 func (stream stream_t) generator() ([]usage_t, []query_t) {
 	var i uint64
 	x := stream.x
 	usage := make([]usage_t, stream.N)
 	query := make([]query_t, stream.Q)
 
-	for i = 0; i < stream.N; i++ {
-		x = (x*stream.a + stream.b) % (10E9 + 7)
-		x = x % stream.N
+	for i = 0; i < stream.N; i++ { // generování spotřeby
+		x = stream.next(x)
+		if x > stream.N-1 {
+			x = x % stream.N
+		}
 		usage[i].pow = x
 		usage[i].index = i
 	}
-	for i = 0; i < stream.Q; i++ {
-		x = (x*stream.a + stream.b) % (10E9 + 7)
+	for i = 0; i < stream.Q; i++ { // generování dotazů
+		x = stream.next(x) // B
+		if x > stream.N-1 {
+			x = x % stream.N
+		}
 		query[i].B = x
-		x = (x*stream.a + stream.b) % (10E9 + 7)
+		x = stream.next(x) // E
+		if x > stream.N-1 {
+			x = x % stream.N
+		}
 		query[i].E = x
 		if query[i].E < query[i].B {
 			swp := query[i].E
 			query[i].E = query[i].B
 			query[i].B = swp
 		}
-		query[i].B %= stream.N
-		query[i].E %= stream.N
-		x = (x*stream.a + stream.b) % (10E9 + 7)
+		x = stream.next(x) // K
 		if x > query[i].E-query[i].B {
 			query[i].K = x % (query[i].E - query[i].B + 1)
 		} else {
 			query[i].K = x
 		}
 	}
+	fmt.Printf("%v\n%v\n", usage, query)
 	return usage, query
 }
 
