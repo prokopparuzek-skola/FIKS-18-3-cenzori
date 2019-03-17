@@ -105,26 +105,22 @@ func (stream stream_t) generator() ([]usage_t, []query_t) {
 			query[i].K = x
 		}
 	}
-	fmt.Printf("%v\n%v\n", usage, query)
 	return usage, query
 }
 
 func solve(usage []usage_t, query []query_t) uint64 {
 	var XOR, index uint64
-	last := int64(-1)
 
 	for _, ques := range query {
+		index = 0
 		for _, pow := range usage {
-			if int64(pow.pow) == last {
-				continue
-			} else if pow.index < ques.B || pow.index > ques.E {
+			if pow.index < ques.B || pow.index > ques.E {
 				continue
 			} else {
 				if index == ques.K {
 					XOR ^= pow.pow
 					break
 				} else {
-					last = int64(pow.pow)
 					index++
 				}
 			}
