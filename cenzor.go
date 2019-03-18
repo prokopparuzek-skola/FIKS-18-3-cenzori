@@ -1,6 +1,7 @@
 package main
 
 import "fmt"
+import "os"
 
 type stream_t struct {
 	N uint64
@@ -108,7 +109,7 @@ func (stream stream_t) generator() ([]usage_t, []query_t) {
 	return usage, query
 }
 
-func solve(usage []usage_t, query []query_t) uint64 {
+func solve(usage []usage_t, query []query_t, out chan uint64) {
 	var XOR, index uint64
 
 	for _, ques := range query {
@@ -126,13 +127,8 @@ func solve(usage []usage_t, query []query_t) uint64 {
 			}
 		}
 	}
-	return XOR
-}
-
-func compute(stream stream_t, out chan uint64) {
-	usage, query := stream.generator()
-	usage = sort(usage)
-	out <- solve(usage, query)
+	fmt.Fprintln(os.Stderr, "Solved")
+	out <- XOR
 }
 
 func main() {
@@ -154,7 +150,10 @@ func main() {
 		stream.a = a
 		stream.b = b
 		stream.x = x
-		go compute(stream, task[i])
+		usage, query := stream.generator()
+		usage = sort(usage)
+		fmt.Fprintf(os.Stderr, "Sorted: %d\n", i)
+		go solve(usage, query, task[i])
 	}
 	for i = 0; i < T; i++ {
 		fmt.Printf("%d\n", <-task[i])
