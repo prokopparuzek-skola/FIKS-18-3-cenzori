@@ -129,12 +129,22 @@ func solve(usage []usage_t, query []query_t) uint64 {
 	return XOR
 }
 
+func compute(stream stream_t, out chan uint64) {
+	usage, query := stream.generator()
+	usage = sort(usage)
+	out <- solve(usage, query)
+}
+
 func main() {
 	var T uint8
 	var N, Q, a, b, x uint64
 	var i uint8
+	var task []chan uint64
 
 	fmt.Scanf("%d", &T)
+	for i = 0; i < T; i++ {
+		task = append(task, make(chan uint64, 1))
+	}
 	for i = 0; i < T; i++ {
 		var stream stream_t
 
@@ -144,9 +154,9 @@ func main() {
 		stream.a = a
 		stream.b = b
 		stream.x = x
-		usage, query := stream.generator()
-		usage = sort(usage)
-		XOR := solve(usage, query)
-		fmt.Printf("%d\n", XOR)
+		go compute(stream, task[i])
+	}
+	for i = 0; i < T; i++ {
+		fmt.Printf("%d\n", <-task[i])
 	}
 }
