@@ -2,6 +2,7 @@ package main
 
 import "fmt"
 import "os"
+import "time"
 
 type stream_t struct {
 	N uint64
@@ -160,7 +161,13 @@ func main() {
 		//fmt.Fprintf(os.Stderr, "Compute: %d\n", i)
 		go compute(stream, task[i], i)
 	}
+	time.Sleep(250 * time.Second)
 	for i = 0; i < T; i++ {
-		fmt.Printf("%d\n", <-task[i])
+		select {
+		case res := <-task[i]:
+			fmt.Printf("%d\n", res)
+		default:
+			fmt.Printf("-1\n")
+		}
 	}
 }
