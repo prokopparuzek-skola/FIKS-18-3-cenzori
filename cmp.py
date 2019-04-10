@@ -9,10 +9,11 @@ w = open("output.txt", mode="w")
 last = -1
 for l in r:
     ac = l.split(":")
-    while int(ac[0]) != (last + 1):
+    while int(ac[0]) > (last + 1):
         w.write("-1\n")
         last += 1
     w.write("{}".format(ac[1]))
+    last += 1
 
 r.close()
 w.close()
